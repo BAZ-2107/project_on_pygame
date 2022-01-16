@@ -1,0 +1,19 @@
+#__Получаем фигуры по критериям, переданным в функцию___
+def get_figures(level='all', purpose='all', type_of_figure='all', color='all', coords='all', size='all', full_or_empty='all'):
+
+    con = sqlite3.connect("design_for_game.db")
+    cur = con.cursor()
+
+    string = f'level="{level}" purpose="{purpose}" type_of_figure="{type_of_figure}" color="{color}" coords="{coords}" size="{size}" full_or_empty="{full_or_empty}"'
+    string_for_search = ''
+    for elem in string.split():
+        if elem.split('=')[-1][1:-1] != 'all':
+	    string_for_search += ' AND ' + elem
+    if string_for_search == ' AND ':
+	string_for_search = ''
+    else:
+	string_for_search = 'WHERE' + string_for_search[5:]
+    result = cur.execute(f'SELECT * FROM figures {string_for_search}').fetchall()
+    if result:
+	return [elem for elem in result]
+    return None
